@@ -13,27 +13,31 @@
       (char (+ (int msg-char) offset-kw-char))
       (char (+ (int \a) (- offset-kw-char (+ 1 rest)))))))
 
-(defn- map-to-string [fn coll-1 coll-2]
-  (cs/join (map #(fn %1 %2) coll-1 coll-2)))
-
-(defn encode [keyword message]
-  (map-to-string encrypt-char (chain-kw keyword message) (seq message))
-  )
-
-(encode "scones" "meetmebythetree")
-
-(defn decode [keyword message]
-  "decodeme")
-
-(defn decipher [cipher message]
-  "decypherme")
+(defn- decrypt-char [kw-char cp-char]
+  (let [offset-msg-char (- (- (int kw-char) (int \a))
+                           (- (int cp-char) (int \a)))]
+    (if (<= 0 offset-msg-char)
+      (char (- (+ 1 (int \z)) offset-msg-char))
+      (char (+ (int \a) (* -1 offset-msg-char))))))
 
 ;  01234567890123456789012345
-;  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-;C cdefghijklmnopqrstuvwxyzab
+;  abcdefghijklmnopqrstuvwxyz
 ;E efghijklmnopqrstuvwxyzabcd
 ;M mnopqrstuvwxyzabcdefghijkl
 
 ;sconessconessco
-;meetmebythetree
 ;egsgqwtahuiljgs
+;meetmebythetree
+
+(defn- map-to-string [fn coll-1 coll-2]
+  (cs/join (map #(fn %1 %2) coll-1 coll-2)))
+
+
+(defn encode [keyword message]
+  (map-to-string encrypt-char (chain-kw keyword message) (seq message)))
+
+(defn decode [keyword message]
+  (map-to-string decrypt-char (chain-kw keyword message) (seq message)))
+
+(defn decipher [cipher message]
+  "decypherme")

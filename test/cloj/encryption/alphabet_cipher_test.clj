@@ -6,7 +6,6 @@
   (testing "can encode a message with a secret keyword"
     (is (= "egsgqwtahuiljgs"
            (encode "scones" "meetmebythetree")))))
-; add test with keyword longer than message
 
 (deftest test-decode
   (testing "can decode a message given an encoded message and a secret keyword"

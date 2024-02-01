@@ -15,4 +15,7 @@
 (deftest test-decipher
   (testing "can extract the secret keyword given an encrypted message and the original message"
     (is (= "scones"
-           (decipher "hcqxqqtqljmlzhwiivgbsapaiwcenmyu" "packmyboxwithfivedozenliquorjugs")))))
+           (decipher "egsgqwtahuiljgs" "meetmebythetree")))
+    (is (= "scones"
+           (decipher "hcqxqqtqljmlzhwiivgbsapaiwcenmyu" "packmyboxwithfivedozenliquorjugs")))
+    ))

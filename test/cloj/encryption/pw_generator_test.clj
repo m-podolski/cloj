@@ -4,23 +4,26 @@
 
 (deftest test-main
   (testing "runs"
+    (let [out-str (with-out-str (-main))]
+      (is (= out-str "Invalid Command: No command given")))
     (let [out-str (with-out-str (-main "validate" "mompl"))]
-      (is (= out-str "{:command validate, :problem nil, :result {:rating :strong}}")))))
+      (is (= out-str ":strong")))
+    ))
 
 (deftest test-dispatch
   (testing "handles invalid args"
     (is (= {:command nil :problem :no-command} (dispatch '())))
-    (is (= {:command "validate" :problem :no-arg} (dispatch '("validate"))))
+    (is (= {:command :validate :problem :no-arg} (dispatch '("validate"))))
     (is (= {:command "murf" :problem :unknown-command} (dispatch '("murf" "mompl"))))
-    (is (= {:command "generate" :problem :too-many-args}
+    (is (= {:command :generate :problem :too-many-args}
            (dispatch '("generate" "this"))))
-    (is (= {:command "generate" :problem :too-many-args}
+    (is (= {:command :generate :problem :too-many-args}
            (dispatch '("generate" "this" "more")))))
 
   (testing "handle valid args"
-    (is (= {:command "validate" :problem nil :result {:rating :strong}}
+    (is (= {:command :validate :problem nil :result {:rating :strong}}
            (dispatch '("validate" "mompl"))))
-    (is (= {:command "generate" :problem nil :result {:password "password"}}
+    (is (= {:command :generate :problem nil :result {:password "password"}}
            (dispatch '("generate"))))))
 
 

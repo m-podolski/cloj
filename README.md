@@ -7,15 +7,15 @@
 - [ ] root-simplificator
 - [ ] polynomial-expander-factorizer
 - [ ] rectangular-polar-coord-converter
-    - [ ] extend for complex numbers
+  - [ ] extend for complex numbers
 
 ### Easy
 
 - [x] (wonderland clojure kata) alphabet-cipher
-    - [ ] refactor extract ucp-char-conversion
+  - [ ] refactor extract ucp-char-conversion
 - [ ] password-generator
-    - [ ] strength-validator
-    - [ ] generation with console-to-file-io
+  - [ ] strength-validator
+  - [ ] generator with console-to-file-io
 - [ ] quicksort and binary search with some optimisation
 - [ ] (khan cst rec. alg.) sierpinski gasket
 
@@ -46,7 +46,7 @@ Taken from [bsi.bund.de/EN/.../Sichere-Passwoerter-erstellen/sichere-passwoerter
 1. Different chracter-types (upper/lower-case letters, numbers, special characters) relative to length
 
     - `>=` 8 characters for complex passwords (4 types of characters)
-    - `>=` 25 characters for simple passwords (2 types of characters)
+    - `>=` 20 characters for simple passwords (2 types of characters)
 
 2. No surrounding characters on an otherwise simple password
 
@@ -61,8 +61,8 @@ Taken from [bsi.bund.de/EN/.../Sichere-Passwoerter-erstellen/sichere-passwoerter
 4. No Semantic patterns
 
     - no common sequences of characters
-    - full password not a word that appears in the dictionary (for simple passwords with length
-      `>=` 25)
+    - full password not a word or consisting of words that appear in the dictionary (for simple passwords with length
+      `>=` 20)
 
 5. Easily rememberable
 

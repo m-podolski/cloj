@@ -1,10 +1,8 @@
-(ns cloj.encryption.pw-generator)
+(ns cloj.encryption.pw-generator.main
+  (:require
+    [cloj.encryption.pw-generator.generation :refer :all]
+    [cloj.encryption.pw-generator.validation :refer :all]))
 
-(defn validate [arg] {:rating :strong})
-
-(defn generate [] {:password "password"})
-
-(def ratings {:strong 1 :moderate 2 :weak 3})
 
 (def problems
   {:no-command      {:message "No command given"}
@@ -30,8 +28,7 @@
     (case (nth args 0)
       "validate" {:command :validate :problem :too-many-args}
       "generate" {:command :generate :problem :too-many-args}
-      {:command (nth args 0) :problem :too-many-args})
-    ))
+      {:command (nth args 0) :problem :too-many-args})))
 
 
 (defmulti print-record (fn [record] [(if (nil? (:problem record))

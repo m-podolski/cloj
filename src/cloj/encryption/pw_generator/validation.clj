@@ -8,4 +8,4 @@
                     :special      ["!\"§$%&/()=?`" "{[]}\\~"
                                    ",.-#+" ";:_'*" "/*-+"]})
 
-(defn validate [arg] {:rating :strong})
+(defn validate [password] {:password password :rating :strong})

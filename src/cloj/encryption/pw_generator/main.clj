@@ -4,32 +4,26 @@
     [cloj.encryption.pw-generator.validation :refer :all]))
 
 
+(defn dispatch [args]
+  (let [arg-count (count args)]
+    (case arg-count
+      0 {:problem :no-command}
+      (case (nth args 0)
+        "validate" (case arg-count
+                     1 {:command :validate :problem :no-arg}
+                     2 {:command :validate :result (validate (nth args 1))}
+                     {:command :validate :problem :too-many-args})
+        "generate" (case arg-count
+                     1 {:command :generate :result (generate)}
+                     {:command :generate :problem :too-many-args})
+        {:command (nth args 0) :problem :unknown-command}))))
+
+
 (def problems
   {:no-command      {:message "No command given"}
    :unknown-command {:message "Unknown command"}
    :no-arg          {:message "No argument given"}
    :too-many-args   {:message "Too many arguments given"}})
-
-(defn dispatch [args]
-  (case (count args)
-    0 {:command nil :problem :no-command}
-    1 (case (nth args 0)
-        "validate" {:command :validate :problem :no-arg}
-        "generate" {:command :generate
-                    :problem nil
-                    :result  (generate)}
-        {:command (nth args 0) :problem :unknown-command})
-    2 (case (nth args 0)
-        "validate" {:command :validate
-                    :problem nil
-                    :result  (validate (nth args 1))}
-        "generate" {:command :generate :problem :too-many-args}
-        {:command (nth args 0) :problem :unknown-command})
-    (case (nth args 0)
-      "validate" {:command :validate :problem :too-many-args}
-      "generate" {:command :generate :problem :too-many-args}
-      {:command (nth args 0) :problem :too-many-args})))
-
 
 (defmulti print-record (fn [record] [(if (nil? (:problem record))
                                        (:command record)

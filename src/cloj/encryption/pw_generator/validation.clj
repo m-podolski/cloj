@@ -8,14 +8,14 @@
                        :complexity 2}})
 
 
-(defn- check-surrounding-chars [validation-result]
-  (conj validation-result {:surrounding-chars {:valid   true
-                                               :matches []}}))
+(defn- check-surrounding-chars [result]
+  (conj result {:surrounding-chars {:valid   true
+                                    :matches []}}))
 
 
-(defn- check-repeated-sequences [validation-result]
-  (conj validation-result {:repeated-sequences {:valid   true
-                                                :matches []}}))
+(defn- check-repeated-sequences [result]
+  (conj result {:repeated-sequences {:valid   true
+                                     :matches []}}))
 
 
 (def char-patterns {:pc-german {:alphabetical ["qwertzuiopü" "asdfghjklöä"
@@ -24,14 +24,35 @@
                                 :special      ["!\"§$%&/()=?`" "{[]}\\~"
                                                ",.-#+" ";:_'*" "/*-+"]}})
 
-(defn- check-char-patterns [validation-result]
-  (conj validation-result {:char-patterns {:valid   true
-                                           :matches []}}))
+(defn- check-char-patterns [result]
+  (conj result {:char-patterns {:valid   true
+                                :matches []}}))
 
 
-(defn- rate [validation-result]
-  (conj validation-result {:rating   :strong
-                           :problems []}))
+(defn- xor
+  ([] nil)
+  ([& preds]
+   (if (= 1 (count (filter true? preds))) true false)))
+
+(defn- rate [result]
+  (let [valid? (fn [res-key] (-> result res-key :valid))
+        problems (vec (filter #(false? (valid? %)) (keys result)))]
+    (cond
+      (and
+        (valid? :length-complexity)
+        (valid? :surrounding-chars)
+        (and (valid? :repeated-sequences) (valid? :char-patterns)))
+      (conj result {:rating :strong :problems problems})
+
+      (and (valid? :length-complexity)
+           (xor (valid? :surrounding-chars)
+                (and (valid? :repeated-sequences) (valid? :char-patterns))))
+      (conj result {:rating :moderate :problems problems})
+
+      (xor (valid? :length-complexity)
+           (or (valid? :surrounding-chars)
+               (and (valid? :repeated-sequences) (valid? :char-patterns))))
+      (conj result {:rating :weak :problems problems}))))
 
 
 (defn validate [password]

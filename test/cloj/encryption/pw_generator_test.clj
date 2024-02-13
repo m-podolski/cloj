@@ -35,7 +35,6 @@
   (testing "produces expected record"
     (is (s/valid? ::result (validate "abcdefghijklmno1987")))))
 
-
 (deftest validation-rating
   (testing "rates passwords"
     (testing "strong"

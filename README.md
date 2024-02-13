@@ -4,18 +4,19 @@
 
 ### Math
 
-- [ ] root-simplificator
+- [ ] root-simplificator using the sieve of eratosthenes
+- [ ] logic-library (xor, nor, nand, if, iff,...)
 - [ ] polynomial-expander-factorizer
 - [ ] rectangular-polar-coord-converter
-  - [ ] extend for complex numbers
+    - [ ] extend for complex numbers
 
 ### Easy
 
 - [x] (wonderland clojure kata) alphabet-cipher
-  - [ ] refactor extract ucp-char-conversion
+    - [ ] refactor extract ucp-char-conversion
 - [ ] password-generator
-  - [ ] strength-validator
-  - [ ] generator with console-to-file-io
+    - [ ] strength-validator
+    - [ ] generator with console-to-file-io
 - [ ] quicksort and binary search with some optimisation
 - [ ] (khan cst rec. alg.) sierpinski gasket
 
@@ -76,3 +77,5 @@ Taken from [bsi.bund.de/EN/.../Sichere-Passwoerter-erstellen/sichere-passwoerter
 - **strong**: 1 and 2 and 3
 - **moderate**: 1 and (2 xor 3)
 - **weak**: 1 xor (2 or 3)
+
+Note that the app assumes a keyboard-layout of type 'PC German' (which can easily be changed in `pw-generator.validation`. 

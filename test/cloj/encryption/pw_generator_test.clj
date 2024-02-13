@@ -2,10 +2,41 @@
   (:require
     [cloj.encryption.pw-generator.main :refer :all]
     [cloj.encryption.pw-generator.validation :refer :all]
+    [clojure.spec.alpha :as s]
     [clojure.test :refer :all]))
 
 
-(deftest test-validate
+(s/def ::password string?)
+(s/def ::valid boolean?)
+(s/def ::length int?)
+(s/def ::complexity (s/and int? pos? #(<= % 4)))
+(s/def ::matches (s/coll-of string?))
+(s/def ::length-complexity (s/keys :req-un [::valid ::length ::complexity]))
+(s/def ::match-results (s/keys :req-un [::valid ::matches]))
+(s/def ::surrounding-chars ::match-results)
+(s/def ::repeated-sequences ::match-results)
+(s/def ::char-patterns ::match-results)
+(s/def ::rating #{:strong :moderate :weak})
+(s/def ::problems (s/coll-of #{:length-complexity
+                               :surrounding-chars
+                               :repeated-sequences
+                               :char-patterns}
+                             :distinct true))
+
+(s/def ::result (s/keys :req-un [::password
+                                 ::length-complexity
+                                 ::surrounding-chars
+                                 ::repeated-sequences
+                                 ::char-patterns
+                                 ::rating
+                                 ::problems]))
+
+(deftest validation-record
+  (testing "produces expected record"
+    (is (s/valid? ::result (validate "abcdefghijklmno1987")))))
+
+
+(deftest validation-rating
   (testing "rates passwords"
     (testing "strong"
       (is (= (-> (validate "%7_x*2Y-") :rating) :strong))
@@ -62,7 +93,7 @@
         ))))
 
 
-(deftest test-dispatch
+(deftest command-dispatch
   (testing "handles invalid args"
     (let [data (dispatch '())]
       (is (= (-> data :command) nil))
@@ -98,7 +129,7 @@
     ))
 
 
-(deftest test-main
+(deftest console-main
   (testing "runs"
     (let [out-str (with-out-str (-main))]
       (is (= out-str "Invalid Command: No command given")))

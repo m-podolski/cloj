@@ -4,8 +4,8 @@
 
 ### Math
 
-- [ ] root-simplificator using the sieve of eratosthenes
 - [ ] logic-library (xor, nor, nand, if, iff,...)
+- [ ] root-simplificator using the sieve of eratosthenes
 - [ ] polynomial-expander-factorizer
 - [ ] rectangular-polar-coord-converter
     - [ ] extend for complex numbers

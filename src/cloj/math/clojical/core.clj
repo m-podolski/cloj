@@ -2,31 +2,38 @@
   (:refer-clojure :exclude [and or]))
 
 
-(defn- apply-if-bools [args fn]
+(defn- apply-to-booleans [fn args]
   (if (every? boolean? args) (fn args) nil))
 
 
 (defn and
   "Returns true if all args are true and false if one or more are false.
-   Returns false for single args.
-   Returns nil when called without args or if any arg is not a boolean."
+   Returns nil when called without args, with only one arg or if any arg
+   is not a boolean."
   ([] nil)
-  ([x] false)
+  ([x] nil)
   ([x & args]
-   (apply-if-bools
-     (conj args x)
+   (apply-to-booleans
      (fn [args]
        (reduce
          (fn [acc val] (if (true? val) (if (true? acc) true false) false))
-         true args)))))
+         true args))
+     (conj args x))))
 
 
 (defn nand
-  "(nand) returns nil."
+  "Returns true if one or more args are false and false if all are true.
+  Returns nil when called without args, with only one arg or if any arg
+  is not a boolean."
   ([] nil)
-  ([x] false)
-  ([x & args])
-  )
+  ([x] nil)
+  ([x & args]
+   (apply-to-booleans
+     (fn [args]
+       (reduce
+         (fn [acc val] (if (true? val) (if (true? acc) true false) true))
+         false args))
+     (conj args x))))
 
 
 (defn or

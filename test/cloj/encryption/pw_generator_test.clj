@@ -16,24 +16,21 @@
 (s/def ::surrounding-chars ::match-results)
 (s/def ::repeated-sequences ::match-results)
 (s/def ::char-patterns ::match-results)
+(s/def ::validation (s/keys :req-un [::length-complexity
+                                     ::surrounding-chars
+                                     ::repeated-sequences
+                                     ::char-patterns]))
 (s/def ::rating #{:strong :moderate :weak})
-(s/def ::problems (s/coll-of #{:length-complexity
-                               :surrounding-chars
-                               :repeated-sequences
-                               :char-patterns}
-                             :distinct true))
 
 (s/def ::result (s/keys :req-un [::password
-                                 ::length-complexity
-                                 ::surrounding-chars
-                                 ::repeated-sequences
-                                 ::char-patterns
-                                 ::rating
-                                 ::problems]))
+                                 ::validation
+                                 ::rating]))
+
 
 (deftest validation-record
   (testing "produces expected record"
     (is (s/valid? ::result (validate "abcdefghijklmno1987")))))
+
 
 (deftest validation-rating
   (testing "rates passwords"
@@ -119,7 +116,7 @@
     (let [data (dispatch '("validate" "mompl"))]
       (is (= (-> data :command) :validate))
       (is (= (-> data :problem) nil))
-      (is (= (-> data :result :rating) :strong)))
+      (is (= (-> data :result :rating) :weak)))
 
     (let [data (dispatch '("generate"))]
       (is (= (-> data :command) :generate))
@@ -134,5 +131,5 @@
       (is (= out-str "Invalid Command: No command given")))
 
     (let [out-str (with-out-str (-main "validate" "mompl"))]
-      (is (= out-str ":strong")))
+      (is (= out-str ":weak")))
     ))

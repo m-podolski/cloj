@@ -1,21 +1,23 @@
 (ns cloj.encryption.pw-generator.validation)
+(ns cloj.encryption.pw-generator.validation
+  (:require [cloj.math.clojical.core :as mc]))
 
 
 (defn- check-length-complexity [password]
-  {:password          password
-   :length-complexity {:valid      true
-                       :length     20
-                       :complexity 2}})
+  {:password   password
+   :validation {:length-complexity {:valid      true
+                                    :length     20
+                                    :complexity 2}}})
 
 
 (defn- check-surrounding-chars [result]
-  (conj result {:surrounding-chars {:valid   true
-                                    :matches []}}))
+  (merge-with into result {:validation {:surrounding-chars {:valid   false
+                                                            :matches []}}}))
 
 
 (defn- check-repeated-sequences [result]
-  (conj result {:repeated-sequences {:valid   true
-                                     :matches []}}))
+  (merge-with into result {:validation {:repeated-sequences {:valid   false
+                                                             :matches []}}}))
 
 
 (def char-patterns {:pc-german {:alphabetical ["qwertzuiopü" "asdfghjklöä"
@@ -25,8 +27,8 @@
                                                ",.-#+" ";:_'*" "/*-+"]}})
 
 (defn- check-char-patterns [result]
-  (conj result {:char-patterns {:valid   true
-                                :matches []}}))
+  (merge-with into result {:validation {:char-patterns {:valid   false
+                                                        :matches []}}}))
 
 
 (defn- xor
@@ -35,24 +37,23 @@
    (if (= 1 (count (filter true? preds))) true false)))
 
 (defn- rate [result]
-  (let [valid? (fn [res-key] (-> result res-key :valid))
-        problems (vec (filter #(false? (valid? %)) (keys result)))]
+  (let [valid? (fn [res-key] (-> result :validation res-key :valid))]
     (cond
       (and
         (valid? :length-complexity)
         (valid? :surrounding-chars)
         (and (valid? :repeated-sequences) (valid? :char-patterns)))
-      (conj result {:rating :strong :problems problems})
+      (conj result {:rating :strong})
 
       (and (valid? :length-complexity)
-           (xor (valid? :surrounding-chars)
-                (and (valid? :repeated-sequences) (valid? :char-patterns))))
-      (conj result {:rating :moderate :problems problems})
+           (mc/xor (valid? :surrounding-chars)
+                   (and (valid? :repeated-sequences) (valid? :char-patterns))))
+      (conj result {:rating :moderate})
 
-      (xor (valid? :length-complexity)
-           (or (valid? :surrounding-chars)
-               (and (valid? :repeated-sequences) (valid? :char-patterns))))
-      (conj result {:rating :weak :problems problems}))))
+      (mc/xor (valid? :length-complexity)
+              (or (valid? :surrounding-chars)
+                  (and (valid? :repeated-sequences) (valid? :char-patterns))))
+      (conj result {:rating :weak}))))
 
 
 (defn validate [password]

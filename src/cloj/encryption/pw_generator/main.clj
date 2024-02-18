@@ -25,6 +25,7 @@
    :no-arg          {:message "No argument given"}
    :too-many-args   {:message "Too many arguments given"}})
 
+
 (defmulti print-record (fn [record] [(if (nil? (:problem record))
                                        (:command record)
                                        :problem)]))

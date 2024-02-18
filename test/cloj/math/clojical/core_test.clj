@@ -30,21 +30,36 @@
 (deftest disjunctions
   (testing "or"
     (is (true? (c/or true false false)))
-    (is (true? (c/or true true false)))
-    (is (true? (c/or true true true)))
-    (is (true? (c/or true)))
-    (is (false? (c/or false)))
+    (is (true? (c/or true false true)))
+    (is (true? (c/or false true false)))
     (is (false? (c/or false false false)))
+    (is (nil? (c/or true)))
+    (is (nil? (c/or false)))
     (is (nil? (c/or true "string")))
     (is (nil? (c/or true 0))))
 
-  (testing "nor"
-    (is (true? (c/nor)))
-    )
-
   (testing "xor"
-    (is (true? (c/xor)))
-    ))
+    (is (true? (c/xor true false false)))
+    (is (true? (c/xor false true false)))
+    (is (true? (c/xor false false true)))
+    (is (false? (c/xor true true true)))
+    (is (false? (c/xor true false true)))
+    (is (false? (c/xor false false false)))
+    (is (nil? (c/xor true)))
+    (is (nil? (c/xor false)))
+    (is (nil? (c/xor true "string")))
+    (is (nil? (c/xor true 0))))
+
+  (testing "nor"
+    (is (true? (c/nor false false false)))
+    (is (false? (c/nor false true false)))
+    (is (false? (c/nor false false true)))
+    (is (false? (c/nor true true true)))
+    (is (false? (c/nor true false true)))
+    (is (nil? (c/nor true)))
+    (is (nil? (c/nor false)))
+    (is (nil? (c/nor true "string")))
+    (is (nil? (c/nor true 0)))))
 
 
 (deftest conditionals

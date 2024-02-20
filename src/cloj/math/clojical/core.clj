@@ -1,9 +1,10 @@
 (ns cloj.math.clojical.core
-  (:refer-clojure :exclude [and or]))
+  (:refer-clojure :exclude [and or])
+  (:require [clojure.spec.alpha :as s]))
 
 
 (defn- apply-to-booleans [fn args]
-  (if (every? boolean? args) (fn args) nil))
+  (if (s/valid? (s/coll-of boolean?) args) (fn args) nil))
 
 
 (defn and
@@ -44,8 +45,7 @@
   ([x] nil)
   ([x & args]
    (apply-to-booleans
-     (fn [args]
-       (if (<= 1 (count (filter true? args))) true false))
+     (fn [args] (if (<= 1 (count (filter true? args))) true false))
      (conj args x))))
 
 
@@ -58,35 +58,45 @@
   ([x] nil)
   ([x & args]
    (apply-to-booleans
-     (fn [args]
-       (if (= 1 (count (filter true? args))) true false))
+     (fn [args] (if (= 1 (count (filter true? args))) true false))
      (conj args x))))
 
 
 (defn nor
-  "Returns true if all args are false and false if any or all are true.
+  "Returns true if all args are false and false if one or more args are true.
   Returns nil when called without args, with only one arg or if any arg
   is not a boolean."
   ([] nil)
   ([x] nil)
   ([x & args]
    (apply-to-booleans
-     (fn [args]
-       (if (every? false? args) true false))
+     (fn [args] (if (every? false? args) true false))
      (conj args x))))
 
 
-(defn if
-  "(if) returns nil."
+(defn lif
+  "Returns true if both args are true or if the first arg is false.
+  Returns false if the first arg is true and the second is false.
+  Returns nil when called without args, with only one arg or if any are
+  is not a boolean."
   ([] nil)
-  ([x] x)
-  ([x & args])
-  )
+  ([x] nil)
+  ([x y]
+   (apply-to-booleans
+     (fn [[hyp con]]
+       (if (and (true? hyp) (false? con)) false true))
+     (seq [x y]))))
 
 
 (defn iff
-  "(iff) returns nil."
+  "Returns true if both args are true or if the first arg is false.
+  Returns false if the first arg is true and the second is false.
+  Returns nil when called without args, with only one arg or if any arg
+  is not a boolean."
   ([] nil)
-  ([x] x)
-  ([x & args])
-  )
+  ([x] nil)
+  ([x y]
+   (apply-to-booleans
+     (fn [[hyp con]]
+       (if (xor (and hyp con) (nor hyp con)) true false))
+     (seq [x y]))))

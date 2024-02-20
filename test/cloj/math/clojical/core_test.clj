@@ -1,5 +1,4 @@
 (ns cloj.math.clojical.core-test
-  (:refer-clojure :exclude [and or])
   (:require [cloj.math.clojical.core :as c]
             [clojure.test :refer :all]))
 
@@ -63,9 +62,23 @@
 
 
 (deftest conditionals
-  (testing "if"
-    (is (true? (c/if)))
-    )
+  (testing "lif"
+    (is (true? (c/lif true true)))
+    (is (true? (c/lif true true)))
+    (is (false? (c/lif true false)))
+    (is (true? (c/lif false true)))
+    (is (true? (c/lif false false)))
+    (is (nil? (c/lif true)))
+    (is (nil? (c/lif false)))
+    (is (nil? (c/lif true "string")))
+    (is (nil? (c/lif true 0))))
+
   (testing "iff"
-    (is (true? (c/iff)))
-    ))
+    (is (true? (c/iff true true)))
+    (is (true? (c/iff false false)))
+    (is (false? (c/iff true false)))
+    (is (false? (c/iff false true)))
+    (is (nil? (c/iff true)))
+    (is (nil? (c/iff false)))
+    (is (nil? (c/iff true "string")))
+    (is (nil? (c/iff true 0)))))

@@ -1,7 +1,7 @@
-(ns cloj.encryption.pw-generator-test
+(ns cloj.pw-generator.pw-generator-test
   (:require
-    [cloj.encryption.pw-generator.main :refer :all]
-    [cloj.encryption.pw-generator.validation :refer :all]
+    [cloj.pw-generator.main :refer :all]
+    [cloj.pw-generator.validation :refer :all]
     [clojure.spec.alpha :as s]
     [clojure.test :refer :all]))
 

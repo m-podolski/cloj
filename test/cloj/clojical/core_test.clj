@@ -1,5 +1,5 @@
-(ns cloj.math.clojical.core-test
-  (:require [cloj.math.clojical.core :as c]
+(ns cloj.clojical.core-test
+  (:require [cloj.clojical.core :as c]
             [clojure.test :refer :all]))
 
 

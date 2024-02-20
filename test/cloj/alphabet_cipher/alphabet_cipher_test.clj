@@ -1,5 +1,5 @@
-(ns cloj.encryption.alphabet-cipher-test
-  (:require [cloj.encryption.alphabet_cipher :refer :all]
+(ns cloj.alphabet-cipher.alphabet-cipher-test
+  (:require [cloj.alphabet-cipher.alphabet-cipher :refer :all]
             [clojure.test :refer :all]))
 
 (deftest test-encode

@@ -1,4 +1,4 @@
-(ns cloj.encryption.alphabet_cipher
+(ns cloj.alphabet-cipher.alphabet-cipher
   (:require [clojure.string :as cs]))
 
 

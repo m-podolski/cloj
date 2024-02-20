@@ -1,7 +1,7 @@
-(ns cloj.encryption.pw-generator.main
+(ns cloj.pw-generator.main
   (:require
-    [cloj.encryption.pw-generator.generation :refer :all]
-    [cloj.encryption.pw-generator.validation :refer :all]))
+    [cloj.pw-generator.generation :refer :all]
+    [cloj.pw-generator.validation :refer :all]))
 
 
 (defn dispatch [args]

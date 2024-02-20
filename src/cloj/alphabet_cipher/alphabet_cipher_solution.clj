@@ -1,4 +1,4 @@
-(ns cloj.encryption.alphabet_cipher_solution
+(ns cloj.alphabet-cipher.alphabet-cipher-solution
   (:require [clojure.test :refer :all]))
 
 (defn idx [c]

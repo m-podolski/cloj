@@ -1,4 +1,4 @@
-(ns cloj.math.clojical.core
+(ns cloj.clojical.core
   (:refer-clojure :exclude [and or])
   (:require [clojure.spec.alpha :as s]))
 

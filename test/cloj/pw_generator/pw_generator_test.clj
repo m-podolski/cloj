@@ -10,8 +10,12 @@
 (s/def ::valid boolean?)
 (s/def ::length int?)
 (s/def ::complexity (s/and int? pos? #(<= % 4)))
+(s/def ::char-classes (s/coll-of keyword? :kind set?))
 (s/def ::matches (s/coll-of string?))
-(s/def ::length-complexity (s/keys :req-un [::valid ::length ::complexity]))
+(s/def ::length-complexity (s/keys :req-un [::valid
+                                            ::length
+                                            ::complexity
+                                            ::char-classes]))
 (s/def ::match-results (s/keys :req-un [::valid ::matches]))
 (s/def ::surrounding-chars ::match-results)
 (s/def ::repeated-sequences ::match-results)
@@ -30,6 +34,7 @@
 (deftest validation-record
   (testing "produces expected record"
     (is (s/valid? ::result (validate "abcdefghijklmno1987")))))
+#_(s/explain ::result (validate "abcdefghijklmno1987"))
 
 
 (deftest validation-rating

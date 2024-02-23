@@ -1,13 +1,13 @@
 (ns cloj.pw-generator.validation
-  (:require [cloj.math.clojical.core :as mc]))
+  (:require [cloj.clojical.core :as cc]))
 
 
-(def config {:long-pw         {:min-len 20 :min-comp 2}
-             :short-pw        {:min-len 8 :min-comp 4}
+(def config {:long            {:len 20 :comp 2}
+             :short           {:len 8 :comp 4}
              :keyboard-layout :pc-german
-             :uc-ranges       {:numbers    {:lo 48 :up 57}
-                               :upper-case {:lo 65 :up 90}
-                               :lower-case {:lo 97 :up 122}
+             :uc-ranges       {:numbers    [{:lo 48 :up 57}]
+                               :upper-case [{:lo 65 :up 90}]
+                               :lower-case [{:lo 97 :up 122}]
                                :special    [{:lo 33 :up 47}
                                             {:lo 58 :up 64}
                                             {:lo 91 :up 96}
@@ -22,11 +22,43 @@
                                               ";:_'*" "/*-+"]}})
 
 
+(defn is-in-range? [n bounds-list]
+  (some true?
+        (for [bounds bounds-list]
+          (and (<= (-> bounds :lo) n) (>= (-> bounds :up) n)))))
+
+
+(defn get-char-classes [password]
+  (reduce (fn [acc ucp]
+            (cond
+              (is-in-range? ucp (-> config :uc-ranges :numbers))
+              (conj acc :numbers)
+              (is-in-range? ucp (-> config :uc-ranges :upper-case))
+              (conj acc :upper-case)
+              (is-in-range? ucp (-> config :uc-ranges :lower-case))
+              (conj acc :lower-case)
+              (is-in-range? ucp (-> config :uc-ranges :special))
+              (conj acc :special)))
+          #{} (map int password)))
+
+
 (defn- check-length-complexity [password]
-  {:password   password
-   :validation {:length-complexity {:valid      true
-                                    :length     20
-                                    :complexity 2}}})
+  (let [length (count password)
+        char-classes (get-char-classes password)
+        complexity (count char-classes)
+        valid (cond
+                (and (<= (-> config :short :len) length)
+                     (= (-> config :short :comp) complexity))
+                true
+                (and (<= (-> config :long :len) length)
+                     (<= (-> config :long :comp) complexity))
+                true
+                :else false)]
+    {:password   password
+     :validation {:length-complexity {:valid        valid
+                                      :length       length
+                                      :complexity   complexity
+                                      :char-classes char-classes}}}))
 
 
 (defn- check-surrounding-chars [result]
@@ -54,14 +86,15 @@
       (conj result {:rating :strong})
 
       (and (valid? :length-complexity)
-           (mc/xor (valid? :surrounding-chars)
+           (cc/xor (valid? :surrounding-chars)
                    (and (valid? :repeated-sequences) (valid? :char-patterns))))
       (conj result {:rating :moderate})
 
-      (mc/xor (valid? :length-complexity)
+      (cc/xor (valid? :length-complexity)
               (or (valid? :surrounding-chars)
                   (and (valid? :repeated-sequences) (valid? :char-patterns))))
-      (conj result {:rating :weak}))))
+      (conj result {:rating :weak})
+      :else (conj result {:rating :weak}))))
 
 
 (defn validate [password]

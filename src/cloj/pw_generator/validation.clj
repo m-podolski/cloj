@@ -15,6 +15,7 @@
                                             {:lo 161 :up 255}
                                             {:lo 8192 :up 8303}
                                             {:lo 8352 :up 8399}]}
+             :bad-surr-chars  [\$ \! \? \#]
              :pc-german       {:alphabetical ["qwertzuiopü" "asdfghjklöä"
                                               "<yxcvbnm,.-" ">YXCVBNM;:_"]
                                :numerical    ["147" "258" "369" "159" "753"]
@@ -22,22 +23,21 @@
                                               ";:_'*" "/*-+"]}})
 
 
-(defn is-in-range? [n bounds-list]
+(defn in-range? [n bounds-list]
   (some true?
         (for [bounds bounds-list]
           (and (<= (-> bounds :lo) n) (>= (-> bounds :up) n)))))
 
-
 (defn get-char-classes [password]
   (reduce (fn [acc ucp]
             (cond
-              (is-in-range? ucp (-> config :uc-ranges :numbers))
+              (in-range? ucp (-> config :uc-ranges :numbers))
               (conj acc :numbers)
-              (is-in-range? ucp (-> config :uc-ranges :upper-case))
+              (in-range? ucp (-> config :uc-ranges :upper-case))
               (conj acc :upper-case)
-              (is-in-range? ucp (-> config :uc-ranges :lower-case))
+              (in-range? ucp (-> config :uc-ranges :lower-case))
               (conj acc :lower-case)
-              (is-in-range? ucp (-> config :uc-ranges :special))
+              (in-range? ucp (-> config :uc-ranges :special))
               (conj acc :special)))
           #{} (map int password)))
 
@@ -54,6 +54,7 @@
                      (<= (-> config :long :comp) complexity))
                 true
                 :else false)]
+
     {:password   password
      :validation {:length-complexity {:valid        valid
                                       :length       length
@@ -61,19 +62,66 @@
                                       :char-classes char-classes}}}))
 
 
+(defn- digit? [char]
+  (not (nil? (parse-long (str char)))))
+
+(defn- bad-char? [char]
+  (not (empty? (filter #(= char %) (-> config :bad-surr-chars)))))
+
+(defn- slice-first [string] (subs string 1))
+(defn- slice-last [string] (subs string 0 (- (count string) 1)))
+(def slice-both (comp slice-last slice-first))
+
+(defn- slice-pw [password number-last bad-char-first bad-char-last]
+  (cond
+    (and number-last (not bad-char-first))
+    {:rest (slice-last password)
+     :bad  [(last password)]}
+    (and number-last bad-char-first)
+    {:rest (slice-both password)
+     :bad  [(first password) (last password)]}
+    (and bad-char-first bad-char-last)
+    {:rest (slice-both password)
+     :bad  [(first password) (last password)]}
+    bad-char-first
+    {:rest (slice-first password)
+     :bad  [(first password)]}
+    bad-char-last
+    {:rest (slice-last password)
+     :bad  [(last password)]}
+    :else
+    {:rest password :bad []}))
+
+(defn- alphabetical? [pw-rest]
+  (cc/xor (not (nil? (re-matches #"[a-z]+" pw-rest)))
+          (not (nil? (re-matches #"[A-Z]+" pw-rest)))))
+
+
 (defn- check-surrounding-chars [result]
-  (merge-with into result {:validation {:surrounding-chars {:valid   false
-                                                            :matches []}}}))
+  (let [password (:password result)
+        number-last (digit? (last password))
+        bad-char-first (bad-char? (first password))
+        bad-char-last (bad-char? (last password))
+        sliced-pw (slice-pw password number-last bad-char-first bad-char-last)
+        simple (alphabetical? (-> sliced-pw :rest))
+        valid (not (and simple (not (empty? (-> sliced-pw :bad)))))]
+
+    (merge-with into result {:validation
+                             {:surrounding-chars
+                              {:valid   valid
+                               :matches (-> sliced-pw :bad)}}})))
 
 
 (defn- check-repeated-sequences [result]
-  (merge-with into result {:validation {:repeated-sequences {:valid   false
-                                                             :matches []}}}))
+  (merge-with into result {:validation
+                           {:repeated-sequences {:valid   false
+                                                 :matches []}}}))
 
 
 (defn- check-char-patterns [result]
-  (merge-with into result {:validation {:char-patterns {:valid   false
-                                                        :matches []}}}))
+  (merge-with into result {:validation
+                           {:char-patterns {:valid   false
+                                            :matches []}}}))
 
 
 (defn- rate [result]

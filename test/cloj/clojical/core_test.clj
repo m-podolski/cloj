@@ -76,3 +76,13 @@
     (is (nil? (c/iff false)))
     (is (nil? (c/iff true "string")))
     (is (nil? (c/iff true 0)))))
+
+
+(deftest macros
+  (testing "nnil?"
+    (is (false? (c/nnil? nil)))
+    (is (true? (c/nnil? true)))
+    (is (true? (c/nnil? false)))
+    (is (true? (c/nnil? "string")))
+    (is (true? (c/nnil? 0)))
+    (is (nil? (c/nnil?)))))

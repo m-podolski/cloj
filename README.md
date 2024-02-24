@@ -84,7 +84,7 @@ Note that the app assumes a keyboard-layout of type 'PC German' (which can easil
 
 #### Clojical
 
-A library that provides logical primitives that operate only on and through booleans so you can express logical constructs concisely and without risiking subtle errors introduced by any 'hybrid' behaviour like short-circuiting etc. It provides a consistent API that corresponds to the mathematical entities closely and also allows argument-lists of arbitrary size in most cases.
+This library provides logical primitives that operate only on and through booleans so you can express logical constructs concisely and without risiking subtle errors introduced by any 'hybrid' behaviour like short-circuiting, default-values, etc. It provides a consistent API that corresponds to the mathematical entities closely and also allows argument-lists of arbitrary size in most cases.
 
 ##### API
 
@@ -92,7 +92,7 @@ A library that provides logical primitives that operate only on and through bool
 
 All functions expect one or more arguments which are all boolean and return `nil` if called differently. This allows for a clear distinction between boolean evaluation-results and type-related problems while avoiding any explicit error-handling.
 
-| Function | Signature  | Description                                                                     |
+| Function | Parameters | Description                                                                     |
 |:---------|:-----------|:--------------------------------------------------------------------------------|
 | `and`    | `[& args]` | True if all arguments are true.                                                 |
 | `nand`   | `[& args]` | True if at least one argument is false.                                         |
@@ -101,3 +101,4 @@ All functions expect one or more arguments which are all boolean and return `nil
 | `nor`    | `[& args]` | True if all arguments are false.                                                |
 | `lif`    | `[x y]`    | '(Logical) If'. True if both arguments are true or the first argument is false. |
 | `iff`    | `[x y]`    | 'If and only if'. True if both arguments are true or both are false.            |
+| `nnil?`  | `[& args]` | 'not nil?'. True when 'clojure.core.nil?' is false and vice versa. (Macro)      |

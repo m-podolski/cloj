@@ -90,3 +90,11 @@
      (fn [[hyp con]]
        (if (xor (and hyp con) (nor hyp con)) true false))
      (seq [x y]))))
+
+
+(defmacro nnil?
+  "'not nil?'. True when nil? is false and vice versa.
+  Returns nil when called without args."
+  ([] nil)
+  ([& args]
+   `(not (nil? ~@args))))

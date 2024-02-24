@@ -9,69 +9,59 @@
 
 (defn and
   "Returns true if all args are true and false if one or more are false.
-   Returns nil when called without args, with only one arg or if any arg
-   is not a boolean."
+   Returns nil when called without args or if any arg is not a boolean."
   ([] nil)
-  ([x] nil)
-  ([x & args]
+  ([& args]
    (apply-to-booleans
      (fn [args]
        (reduce
          (fn [acc val] (if (true? val) (if (true? acc) true false) false))
          true args))
-     (conj args x))))
+     args)))
 
 
 (defn nand
   "Returns true if one or more args are false and false if all are true.
-  Returns nil when called without args, with only one arg or if any arg
-  is not a boolean."
+  Returns nil when called without args or if any arg is not a boolean."
   ([] nil)
-  ([x] nil)
-  ([x & args]
+  ([& args]
    (apply-to-booleans
      (fn [args]
        (reduce
          (fn [acc val] (if (true? val) (if (true? acc) true false) true))
          false args))
-     (conj args x))))
+     args)))
 
 
 (defn or
   "Returns true if one or more args are true and false if all are false.
-  Returns nil when called without args, with only one arg or if any arg
-  is not a boolean."
+  Returns nil when called without args or if any arg is not a boolean."
   ([] nil)
-  ([x] nil)
-  ([x & args]
+  ([& args]
    (apply-to-booleans
      (fn [args] (if (<= 1 (count (filter true? args))) true false))
-     (conj args x))))
+     args)))
 
 
 (defn xor
   "Returns true if exactly one arg is true and false if two or more are true
    or if all are false.
-  Returns nil when called without args, with only one arg or if any arg
-  is not a boolean."
+  Returns nil when called without args or if any arg is not a boolean."
   ([] nil)
-  ([x] nil)
-  ([x & args]
+  ([& args]
    (apply-to-booleans
      (fn [args] (if (= 1 (count (filter true? args))) true false))
-     (conj args x))))
+     args)))
 
 
 (defn nor
   "Returns true if all args are false and false if one or more args are true.
-  Returns nil when called without args, with only one arg or if any arg
-  is not a boolean."
+  Returns nil when called without args or if any arg is not a boolean."
   ([] nil)
-  ([x] nil)
-  ([x & args]
+  ([& args]
    (apply-to-booleans
      (fn [args] (if (every? false? args) true false))
-     (conj args x))))
+     args)))
 
 
 (defn lif

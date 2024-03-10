@@ -6,7 +6,7 @@
   :dependencies [
                  [org.clojure/clojure "1.11.1"]
                  ]
-  :main cloj.encryption.pw-generator
+  :main cloj.pw-tool
   :repl-options {:init-ns cloj.core}
   :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.87.1366"]]}}
   :aliases {"kaocha" ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]})

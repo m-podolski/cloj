@@ -1,7 +1,7 @@
-(ns cloj.pw-generator.main
+(ns cloj.pw-tool.main
   (:require
-    [cloj.pw-generator.generation :refer :all]
-    [cloj.pw-generator.validation :refer :all]))
+    [cloj.pw-tool.generation :refer :all]
+    [cloj.pw-tool.validation :refer :all]))
 
 
 (defn dispatch [args]

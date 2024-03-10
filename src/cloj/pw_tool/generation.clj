@@ -1,3 +1,3 @@
-(ns cloj.pw-generator.generation)
+(ns cloj.pw-tool.generation)
 
 (defn generate [] {:password "password"})

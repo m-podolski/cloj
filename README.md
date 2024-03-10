@@ -4,8 +4,13 @@
 
 ### Math
 
-- [ ] logic-library (xor, nor, nand, if, iff,...)
-- [ ] root-simplificator using the sieve of eratosthenes
+- [x] logic-library
+    - [x] and, nand, or, xor, nor, if, iff
+    - [ ] macros: converse, inverse, contrapositive
+    - [ ] truth-value-evaluation
+        - eval
+        - contingency?, tautology?, contradiction?
+- [ ] root-simplificator
 - [ ] polynomial-expander-factorizer
 - [ ] rectangular-polar-coord-converter
     - [ ] extend for complex numbers
@@ -13,15 +18,21 @@
 ### Easy
 
 - [x] (wonderland clojure kata) alphabet-cipher
-    - [ ] refactor extract ucp-char-conversion
-- [ ] password-generator
-    - [ ] strength-validator
-    - [ ] generator with console-to-file-io
+- [ ] password-tool
+    - [ ] validator
+        - core
+        - parallel
+    - [ ] generator
+        - core (with property-based tests)
+        - console-to-file-io (with java-interop)
 - [ ] quicksort and binary search with some optimisation
 - [ ] (khan cst rec. alg.) sierpinski gasket
 
 ### Difficult
 
+- [ ] scale- and chord-finder
+    - [ ] find chords on note
+    - [ ] find chords on scale
 - [ ] dijkstra's algorithm
 - [ ] (rosetta code) twelve statements
 - [ ] self-balancing search-tree (red-black or AVL)
@@ -78,7 +89,7 @@ Taken from [bsi.bund.de/EN/.../Sichere-Passwoerter-erstellen/sichere-passwoerter
 - **moderate**: 1 and (2 xor 3)
 - **weak**: 1 xor (2 or 3)
 
-Note that the app assumes a keyboard-layout of type 'PC German' (which can easily be changed in `pw-generator.validation`.
+Note that the app assumes a keyboard-layout of type 'PC German' (which can easily be changed in `pw-tool.validation`.
 
 ### Math
 
@@ -101,4 +112,4 @@ All functions expect one or more arguments which are all boolean and return `nil
 | `nor`    | `[& args]` | True if all arguments are false.                                                |
 | `lif`    | `[x y]`    | '(Logical) If'. True if both arguments are true or the first argument is false. |
 | `iff`    | `[x y]`    | 'If and only if'. True if both arguments are true or both are false.            |
-| `nnil?`  | `[& args]` | 'not nil?'. True when 'clojure.core.nil?' is false and vice versa. (Macro)      |
+| `nnil?`  | `[& args]` | 'not nil?'. True when 'clojure.core/nil?' is false and vice versa. (Macro)      |

@@ -34,21 +34,17 @@
 
 (defn get-char-classes [password]
   (reduce (fn [acc ucp]
-            (cond
-              (in-range? ucp (-> config :uc-ranges :numbers))
-              (conj acc :numbers)
-              (in-range? ucp (-> config :uc-ranges :upper-case))
-              (conj acc :upper-case)
-              (in-range? ucp (-> config :uc-ranges :lower-case))
-              (conj acc :lower-case)
-              (in-range? ucp (-> config :uc-ranges :special))
-              (conj acc :special)))
+            (reduce #(conj %1 %2)
+                    acc
+                    (for [range (keys (-> config :uc-ranges))
+                          :when (in-range? ucp (-> config :uc-ranges range))]
+                      range)))
           #{} (map int password)))
 
 
-(defn- check-length-complexity [password]
-  (let [length (count password)
-        char-classes (get-char-classes password)
+(defn- check-length-complexity [result]
+  (let [length (count (:password result))
+        char-classes (get-char-classes (:password result))
         complexity (count char-classes)
         valid (cond
                 (and (<= (-> config :short :len) length)
@@ -59,11 +55,11 @@
                 true
                 :else false)]
 
-    {:password   password
-     :validation {:length-complexity {:valid        valid
-                                      :length       length
-                                      :complexity   complexity
-                                      :char-classes char-classes}}}))
+    (merge-with into result
+                {:validation {:length-complexity {:valid        valid
+                                                  :length       length
+                                                  :complexity   complexity
+                                                  :char-classes char-classes}}})))
 
 
 (defn- digit? [char]
@@ -183,7 +179,7 @@
 
 
 (defn validate [password]
-  (-> password
+  (-> {:password password :validation {}}
       (check-length-complexity)
       (check-surrounding-chars)
       (check-repeating-pattern)

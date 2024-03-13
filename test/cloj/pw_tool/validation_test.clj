@@ -1,6 +1,5 @@
 (ns cloj.pw-tool.validation-test
   (:require
-    [cloj.pw-tool.main :refer :all]
     [cloj.pw-tool.validation :refer :all]
     [clojure.spec.alpha :as s]
     [clojure.test :refer :all]))

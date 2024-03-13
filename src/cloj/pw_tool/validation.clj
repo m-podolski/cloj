@@ -11,10 +11,7 @@
                                    :special    [{:lo 33 :up 47}
                                                 {:lo 58 :up 64}
                                                 {:lo 91 :up 96}
-                                                {:lo 123 :up 126}
-                                                {:lo 161 :up 255}
-                                                {:lo 8192 :up 8303}
-                                                {:lo 8352 :up 8399}]}
+                                                {:lo 123 :up 126}]}
              :bad-surr-chars      [\$ \! \? \#]
              :min-len-repetitions 3
              :pc-german           {:alphabetical ["qwertzuiopü" "asdfghjklöä"

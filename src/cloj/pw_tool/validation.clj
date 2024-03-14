@@ -62,7 +62,17 @@
                                                   :char-classes char-classes}}})))
 
 
-(defn- digit? [char]
+(defn- split-numbers-last [string]
+  (let [number-chars (take-while
+                       (fn [char] (-> char (str) (parse-long) (number?)))
+                       (reverse string))
+        number-seq-index (- (count string) (count number-chars))
+        rest (if (< number-seq-index (count string))
+               (subs string 0 number-seq-index) nil)]
+    [(str rest) (vec (reverse number-chars))]))
+
+
+(defn- is-number? [char]
   (cc/nnil? (parse-long (str char))))
 
 
@@ -80,34 +90,37 @@
 (defn- slice-pw [password number-last bad-char-first bad-char-last]
   (cond
     (and number-last (not bad-char-first))
-    {:rest (slice-last password)
-     :bad  [(last password)]}
+    {:rest (-> password (split-numbers-last) (nth 0))
+     :bad  [[] (-> password (split-numbers-last) (nth 1))]}
     (and number-last bad-char-first)
-    {:rest (slice-both password)
-     :bad  [(first password) (last password)]}
+    {:rest (-> password (slice-first) (split-numbers-last) (nth 0))
+     :bad  [[(first password)] (-> password (split-numbers-last) (nth 1))]}
     (and bad-char-first bad-char-last)
     {:rest (slice-both password)
-     :bad  [(first password) (last password)]}
+     :bad  [[(first password)] [(last password)]]}
     bad-char-first
     {:rest (slice-first password)
-     :bad  [(first password)]}
+     :bad  [[(first password)] []]}
     bad-char-last
     {:rest (slice-last password)
-     :bad  [(last password)]}
+     :bad  [[] [(last password)]]}
     :else
-    {:rest password :bad []}))
+    {:rest password :bad [[] []]}))
 
 
-(defn- alpha-numerical? [pw-rest]
-  (cc/xor (cc/nnil? (re-matches #"[a-z0-9]+" pw-rest))
-          (cc/nnil? (re-matches #"[A-Z0-9]+" pw-rest))))
+(defn- alphabetical? [pw-rest]
+  (cc/xor (cc/nnil? (re-matches #"[a-z]+" pw-rest))
+          (cc/nnil? (re-matches #"[A-Z]+" pw-rest))))
 
 
 (defn- check-surrounding-chars [result]
   (let [password (:password result)
-        sliced-pw (slice-pw password (digit? (last password)) (bad-char? (first password)) (bad-char? (last password)))
-        simple (alpha-numerical? (-> sliced-pw :rest))
-        valid (not (and simple (not (empty? (-> sliced-pw :bad)))))]
+        sliced-pw (slice-pw password
+                            (is-number? (last password))
+                            (bad-char? (first password))
+                            (bad-char? (last password)))
+        simple (alphabetical? (-> sliced-pw :rest))
+        valid (-> (every? empty? (:bad sliced-pw)) (false?) (and simple) (not))]
 
     (merge-with into result
                 {:validation {:surrounding-chars {:valid   valid
@@ -153,7 +166,7 @@
 
 (defn- check-keyboard-patterns [result]
   (merge-with into result
-              {:validation {:keyboard-patterns {:valid   false
+              {:validation {:keyboard-patterns {:valid   true
                                                 :matches []}}}))
 
 

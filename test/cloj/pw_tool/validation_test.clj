@@ -33,7 +33,7 @@
 (deftest validation-record
   (testing "produces expected record"
     (is (s/valid? ::result (validate "abcdefghijklmno1987")))))
-#_(s/explain ::result (validate "abcdefghijklmno1987"))
+(s/explain ::result (validate "abcdefghijklmno1987"))
 
 
 (deftest validation-rating

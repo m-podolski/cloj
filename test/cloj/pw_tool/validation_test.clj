@@ -10,7 +10,8 @@
 (s/def ::length int?)
 (s/def ::complexity (s/and int? pos? #(<= % 4)))
 (s/def ::char-classes (s/coll-of keyword? :kind set?))
-(s/def ::matches (s/coll-of (fn string-or-char? [x] (or (string? x) (char? x)))))
+(s/def ::matches (s/coll-of (fn string-or-char? [x]
+                              (or (string? x) (char? x) (vector? x)))))
 (s/def ::length-complexity (s/keys :req-un [::valid
                                             ::length
                                             ::complexity
@@ -36,6 +37,8 @@
 (s/explain ::result (validate "abcdefghijklmno1987"))
 
 
+;the logical values in the doc-strings mean the respective validity-status
+
 (deftest validation-rating
   (testing "rates passwords"
     (testing "strong"
@@ -43,7 +46,7 @@
       (testing "length-complexity AND surrounding-chars AND (repeating-pattern AND keyboard-pattern)"
         (is (= (-> (validate "%7_x*2Y-") :rating) :strong))
         (is (= (-> (validate "MomplMurftRundDieEck") :rating) :strong))
-        (is (= (-> (validate "mompl murft rund die") :rating) :strong))
+        (is (= (-> (validate "mompl_murft_rund_die") :rating) :strong))
         (is (= (-> (validate "83624.68246.58549.64") :rating) :strong))
         ))
 
@@ -54,7 +57,7 @@
         (is (= (-> (validate "derpalmenstrand06198") :rating) :moderate))
         (is (= (-> (validate "dpalmenstrandkrabben5") :rating) :moderate))
         (is (= (-> (validate "!palmenstrandkrabbe?") :rating) :moderate))
-        (is (= (-> (validate "PALMENSTRANDKRABBE$") :rating) :moderate))
+        (is (= (-> (validate "PALMENSTRANDKRABBEN$") :rating) :moderate))
         )
 
       (testing "NOT repeating pattern
@@ -65,8 +68,8 @@
         (is (= (-> (validate "JEU489GSJEU489GSJEU4") :rating) :moderate))
         (is (= (-> (validate "&K/D(T)&K/D(T)&K/D(T") :rating) :moderate))
         (is (= (-> (validate "m§%m§%m§%m§%m§%m§%m§") :rating) :moderate))
-        (is (= (-> (validate "23{[6]}57=)(/23{[6]}") :rating) :moderate))
-        (is (= (-> (validate "4q0836t8594e4q0836t8") :rating) :moderate))
+        (is (= (-> (validate "23{[6]}57=23{[6]}57=") :rating) :moderate))
+        (is (= (-> (validate "4q0836t8594q0836t859") :rating) :moderate))
         ))
 
     (testing "NOT keyboard patterns
@@ -84,9 +87,9 @@
     (testing "weak"
 
       (testing "NOT surrounding-chars AND NOT
-      (repeating-pattern AND keyboard-patterns) (length-complexity)"
-        (is (= (-> (validate "%7_x*2Yb") :rating) :weak))
-        (is (= (-> (validate "MomplMurftRundNeEcke") :rating) :weak))
+      [repeating-pattern AND keyboard-patterns] (length-complexity)"
+        (is (= (-> (validate "$7_x$7_x") :rating) :weak))
+        (is (= (-> (validate "asdfghjklöäqwertzui1") :rating) :weak))
         )
 
       (testing "NOT length-complexity
@@ -104,14 +107,14 @@
 
       (testing "NOT length-complexity, NOT repeating pattern
       (surrounding-chars AND keyboard-patterns)"
-        (is (= (-> (validate "aB1.aB1") :rating) :moderate))
-        (is (= (-> (validate ":kG2:kG") :rating) :moderate))
-        (is (= (-> (validate "1qW(1qW") :rating) :moderate))
-        (is (= (-> (validate "JEU489GSJEU489GSJEU") :rating) :moderate))
-        (is (= (-> (validate "&K/D(T)&K/D(T)&K/D(") :rating) :moderate))
-        (is (= (-> (validate "m§%m§%m§%m§%m§%m§%m") :rating) :moderate))
-        (is (= (-> (validate "23{[6]}57=)(/23{[6]") :rating) :moderate))
-        (is (= (-> (validate "4q0836t8594e4q0836t") :rating) :moderate))
+        (is (= (-> (validate "aB1.aB1") :rating) :weak))
+        (is (= (-> (validate ":kG2:kG") :rating) :weak))
+        (is (= (-> (validate "1qW(1qW") :rating) :weak))
+        (is (= (-> (validate "JEU489GSJEU489GSJEU") :rating) :weak))
+        (is (= (-> (validate "&K/D(T)&K/D(T)&K/D(") :rating) :weak))
+        (is (= (-> (validate "m§%m§%m§%m§%m§%m§%m") :rating) :weak))
+        (is (= (-> (validate "23{[6]}57=)(/23{[6]") :rating) :weak))
+        (is (= (-> (validate "4q0836t8594e4q0836t") :rating) :weak))
         )
 
       (testing "NOT length-complexity, NOT keyboard patterns
